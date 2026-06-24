@@ -1,7 +1,7 @@
 name: Docker Image Packer
 
 on:
-  workflow_dispatch: # 允许我们手动点击运行
+  workflow_dispatch:
 
 jobs:
   build:
@@ -9,11 +9,9 @@ jobs:
     steps:
       - name: Pull and Save Docker Image
         run: |
-          # 1. 强行拉取官方镜像（GitHub 速度极快）
-          docker pull akiralereal/iptv:v3.6.0
-          
-          # 2. 将镜像保存为 tar 包
-          docker save -o iptv.tar akiralereal/iptv:v3.6.0
+          # 改为官方真实存在的最新版本 v3.5.3
+          docker pull akiralereal/iptv:v3.5.3
+          docker save -o iptv.tar akiralereal/iptv:v3.5.3
           
       - name: Upload Image Artifact
         uses: actions/upload-artifact@v4
