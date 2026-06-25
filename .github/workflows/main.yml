@@ -9,9 +9,9 @@ jobs:
     steps:
       - name: Pull and Save Docker Image
         run: |
-          # 升级到作者提示的最新 v3.7.0 版本
-          docker pull akiralereal/iptv:v3.7.0
-          docker save -o iptv.tar akiralereal/iptv:v3.7.0
+          # 抓取原作者最最最新的主分支镜像
+          docker pull akiralereal/iptv:latest
+          docker save -o iptv.tar akiralereal/iptv:latest
           
       - name: Upload Image Artifact
         uses: actions/upload-artifact@v4
