@@ -1,22 +1,29 @@
-name: Docker Image Packer
+name: Docker Image Live Builder (v3.7.0)
 
 on:
-  workflow_dispatch: # 允许我们手动点击运行
+  workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Pull and Save Docker Image
+      - name: Clone Author's Latest Source Code
         run: |
-          # 1. 强行拉取官方镜像（GitHub 速度极快）
-          docker pull akiralereal/iptv:v3.6.0
+          # 1. 直接克隆原作者的最新的全部源码
+          git clone https://github.com/akiralereal/iptv.git .
           
-          # 2. 将镜像保存为 tar 包
-          docker save -o iptv.tar akiralereal/iptv:v3.6.0
+      - name: Live Build Docker Image
+        run: |
+          # 2. 在云端根据最新源码现场编译出属于你的 v3.7.0 镜像
+          docker build -t akiralereal/iptv:v3.7.0 .
+          
+      - name: Save Image to Tar
+        run: |
+          # 3. 把新鲜出炉的真正新镜像打包
+          docker save -o iptv.tar akiralereal/iptv:v3.7.0
           
       - name: Upload Image Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: iptv-image-tar
+          name: iptv-v3.7.0-real
           path: iptv.tar
