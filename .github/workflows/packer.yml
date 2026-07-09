@@ -1,4 +1,4 @@
-name: Docker Image Live Builder (v3.13.0)
+name: Docker 镜像全自动实时构建器
 
 on:
   workflow_dispatch:
@@ -7,23 +7,28 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Clone Author's Latest Source Code
+      - name: 1. 克隆作者最新的全部源代码
+        git clone https://github.com/akiralereal/iptv.git .
+
+      - name: 2. 自动化提取并对齐作者的最新版本号
         run: |
-          # 1. 直接克隆原作者的最新的全部源码
-          git clone https://github.com/akiralereal/iptv.git .
-          
-      - name: Live Build Docker Image
+          # 自动从源码的 package.json 中精准提取作者当前最新的版本号
+          VERSION=$(node -p "require('./package.json').version")
+          echo "DETECTED_VERSION=v$VERSION" >> $GITHUB_ENV
+          echo "成功精准捕获到作者最新版本号: v$VERSION"
+
+      - name: 3. 云端现场编译最新版镜像
         run: |
-          # 2. 在云端根据最新源码现场编译出属于你的 v3.13.0 镜像
-          docker build -t akiralereal/iptv:v3.13.0 .
-          
-      - name: Save Image to Tar
+          # 使用刚刚提取到的精准版本号进行打包，绝对不会货不对版
+          docker build -t akiralereal/iptv:${{ env.DETECTED_VERSION }} .
+          docker tag akiralereal/iptv:${{ env.DETECTED_VERSION }} akiralereal/iptv:latest
+
+      - name: 4. 将新鲜出炉的真正新镜像打包备用
         run: |
-          # 3. 把新鲜出炉的真正新镜像打包
-          docker save -o iptv.tar akiralereal/iptv:v3.13.0
-          
-      - name: Upload Image Artifact
+          docker save -o iptv.tar akiralereal/iptv:${{ env.DETECTED_VERSION }}
+
+      - name: 5. 上传大礼包到 GitHub 构件下载区
         uses: actions/upload-artifact@v4
         with:
-          name: iptv-v3.13.0-real
+          name: iptv-${{ env.DETECTED_VERSION }}-real
           path: iptv.tar
