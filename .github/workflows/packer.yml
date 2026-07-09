@@ -8,18 +8,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: 1. 克隆作者最新的全部源代码
-        git clone https://github.com/akiralereal/iptv.git .
+        run: |
+          git clone https://github.com/akiralereal/iptv.git .
 
       - name: 2. 自动化提取并对齐作者的最新版本号
         run: |
-          # 自动从源码的 package.json 中精准提取作者当前最新的版本号
           VERSION=$(node -p "require('./package.json').version")
           echo "DETECTED_VERSION=v$VERSION" >> $GITHUB_ENV
           echo "成功精准捕获到作者最新版本号: v$VERSION"
 
       - name: 3. 云端现场编译最新版镜像
         run: |
-          # 使用刚刚提取到的精准版本号进行打包，绝对不会货不对版
           docker build -t akiralereal/iptv:${{ env.DETECTED_VERSION }} .
           docker tag akiralereal/iptv:${{ env.DETECTED_VERSION }} akiralereal/iptv:latest
 
